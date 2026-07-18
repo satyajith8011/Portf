@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Satyajith Halder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@500;700;800&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14152B; --ink-2:#1D1F3D; --paper:#FFF8EC; --paper-2:#FFFDF7;
+    --sakura:#FF5D73; --violet:#7C5CFF; --gold:#FFC145; --mint:#3DDC97;
+    --shadow-hard: 6px 6px 0 var(--ink); --shadow-hard-sm: 4px 4px 0 var(--ink);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Nunito Sans', sans-serif; }
+  ::selection{ background:var(--gold); color:var(--ink); }
+  a{ color:inherit; }
+  h1,h2,h3{ font-family:'Baloo 2', sans-serif; margin:0; }
+  .display{ font-family:'Bangers', cursive; letter-spacing:0.02em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  .halftone{ background-image: radial-gradient(var(--ink) 1px, transparent 1.4px); background-size:14px 14px; opacity:0.06; position:absolute; inset:0; pointer-events:none; }
+
+  #chapterNav{
+    position:fixed; top:0; left:0; right:0; z-index:500;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 22px; background:var(--paper); border-bottom:3px solid var(--ink);
+    font-family:'JetBrains Mono', monospace; font-size:12px;
+  }
+  #chapterNav .brand{
+    font-family:'Bangers', cursive; font-size:20px; letter-spacing:0.03em;
+    background:var(--sakura); color:var(--paper); padding:2px 10px;
+    border:2.5px solid var(--ink); box-shadow:var(--shadow-hard-sm); transform:rotate(-2deg);
+    text-decoration:none; display:inline-block;
+  }
+  #chapterNav .links{ display:flex; gap:4px; overflow-x:auto; max-width:76vw; }
+  #chapterNav .links a{
+    text-decoration:none; white-space:nowrap; padding:6px 10px; border:2px solid transparent;
+    text-transform:uppercase; font-weight:700; color:var(--ink); opacity:0.65;
+    transition:opacity .2s, border-color .2s, transform .2s;
+  }
+  #chapterNav .links a:hover{ opacity:1; border-color:var(--ink); transform:translateY(-2px); }
+  #chapterNav .links a.active{ opacity:1; border-color:var(--ink); background:var(--gold); }
+
+  .panel{ position:relative; background:var(--paper-2); border:3px solid var(--ink); box-shadow:var(--shadow-hard); }
+
+  main{ padding:140px 6vw 100px; max-width:1180px; margin:0 auto; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; display:inline-flex; align-items:center; gap:8px; opacity:0.7; margin-bottom:10px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:2px; background:var(--ink); display:inline-block; }
+  .page-title{ font-size:clamp(38px,6vw,68px); margin-bottom:10px; }
+  .page-title em{ font-style:normal; color:var(--sakura); }
+  .page-sub{ font-size:15.5px; max-width:60ch; opacity:.75; line-height:1.6; margin-bottom:44px; }
+
+  /* Post list */
+  #postList{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
+  .post-card{ padding:24px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease; text-decoration:none; color:var(--ink); }
+  .post-card:hover{ transform:translate(-4px,-4px); box-shadow:10px 10px 0 var(--ink); }
+  .post-meta{ font-family:'JetBrains Mono'; font-size:11px; opacity:.6; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .post-title{ font-size:22px; line-height:1.2; }
+  .post-excerpt{ font-size:14px; line-height:1.6; opacity:.85; }
+  .post-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+  .tag{ font-family:'JetBrains Mono'; font-size:10px; font-weight:700; padding:3px 8px; border:1.5px solid var(--ink); }
+  .read-more{ font-family:'JetBrains Mono'; font-size:12px; font-weight:700; color:var(--sakura); margin-top:2px; }
+
+  /* Post detail */
+  #postDetail{ display:none; }
+  #postDetail.show{ display:block; }
+  #postList.hide{ display:none; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono'; font-size:12px;
+    font-weight:700; text-decoration:none; color:var(--ink); margin-bottom:26px; cursor:pointer;
+    border-bottom:2px solid var(--ink);
+  }
+  .post-detail-head{ margin-bottom:30px; }
+  .post-detail-head h1{ font-size:clamp(30px,5vw,48px); margin:10px 0 12px; line-height:1.1; }
+  .post-body{ font-size:16px; line-height:1.85; max-width:72ch; }
+  .post-body p{ margin:0 0 18px; }
+  .post-body h3{ font-size:20px; margin:28px 0 10px; }
+  .post-body blockquote{
+    margin:22px 0; padding:14px 18px; border-left:4px solid var(--sakura); background:var(--paper-2);
+    font-style:italic; font-size:15px;
+  }
+  .post-body code{ background:var(--ink); color:var(--gold); padding:2px 6px; font-family:'JetBrains Mono'; font-size:13px; }
+
+  #empty-state{ display:none; padding:40px; text-align:center; font-family:'JetBrains Mono'; opacity:.6; }
+
+  footer{ text-align:center; padding:26px; font-family:'JetBrains Mono'; font-size:11px; opacity:.55; }
+
+  @media (max-width:900px){
+    #postList{ grid-template-columns:1fr; }
+    #chapterNav .links{ max-width:58vw; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="chapterNav">
+  <a href="index.html" class="brand">SATYAJITH</a>
+  <div class="links">
+    <a href="index.html#hero">Home</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#projects">Quests</a>
+    <a href="index.html#linkedin">Feed</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="index.html#contact">Connect</a>
+  </div>
+</nav>
+
+<main>
+  <div class="eyebrow">Chapter 09 · The Log</div>
+  <h1 class="page-title">Field <em>Notes</em></h1>
+  <p class="page-sub">Write-ups on what I'm building, breaking, and learning — from embedded systems to security to whatever I picked up this week.</p>
+
+  <div id="postList"></div>
+  <div id="empty-state">No entries yet. Add your first post — see the comment near the top of the script below.</div>
+
+  <article id="postDetail">
+    <a class="back-link" onclick="showList()">&larr; Back to all posts</a>
+    <div class="post-detail-head">
+      <div class="post-meta"><span id="dTag" class="mono"></span></div>
+      <h1 id="dTitle"></h1>
+      <div class="post-meta" id="dMeta"></div>
+    </div>
+    <div class="post-body" id="dBody"></div>
+  </article>
+</main>
+
+<footer>Bengaluru, Karnataka, India · Field Notes</footer>
+
+<script>
+/* ============================================================
+   HOW TO ADD A NEW BLOG POST
+   Copy one object below, paste it into the POSTS array, and edit:
+   - id:      short-url-friendly-slug, no spaces (used in the link)
+   - title:   post title
+   - date:    "18 Jul 2026" style, just for display
+   - tags:    array of short labels
+   - excerpt: 1-2 sentence teaser shown on the card
+   - body:    the full post. Plain HTML is fine — wrap paragraphs
+              in <p>...</p>, use <h3> for subheadings, <blockquote>
+              for pull quotes, <code>...</code> for inline code.
+   Newest posts should go at the TOP of the array.
+   ============================================================ */
+
+  const POSTS = [
+    // Example post — replace with your real ones, or delete this.
+    {
+      id: "hello-world",
+      title: "Hello, world — starting this log",
+      date: "18 Jul 2026",
+      tags: ["Meta"],
+      excerpt: "Kicking off a running log of what I'm building at HirePro and beyond — replace this with your first real post.",
+      body: `
+        <p>This is a placeholder post so you can see how the layout looks. Replace the <code>POSTS</code> array near the top of the script with your own entries.</p>
+        <h3>What goes here</h3>
+        <p>Project write-ups, things learned on the job, notes from certifications, or quick takes on tools you're using.</p>
+        <blockquote>Tip: keep posts short and specific — one idea per post reads better than a long recap.</blockquote>
+      `
+    }
+  ];
+
+  const listEl = document.getElementById('postList');
+  const detailEl = document.getElementById('postDetail');
+  const emptyEl = document.getElementById('empty-state');
+
+  function renderList(){
+    if(POSTS.length === 0){
+      listEl.classList.add('hide');
+      emptyEl.style.display = 'block';
+      return;
+    }
+    listEl.innerHTML = POSTS.map(p => `
+      <a class="post-card panel" href="#${p.id}">
+        <div class="post-meta">${p.date} <span>·</span> ${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <div class="post-title">${p.title}</div>
+        <div class="post-excerpt">${p.excerpt}</div>
+        <div class="read-more">Read entry →</div>
+      </a>
+    `).join('');
+  }
+
+  function showPost(id){
+    const post = POSTS.find(p => p.id === id);
+    if(!post){ showList(); return; }
+    listEl.classList.add('hide');
+    emptyEl.style.display = 'none';
+    detailEl.classList.add('show');
+    document.getElementById('dTag').textContent = post.tags.join(' · ');
+    document.getElementById('dTitle').textContent = post.title;
+    document.getElementById('dMeta').textContent = post.date;
+    document.getElementById('dBody').innerHTML = post.body;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function showList(){
+    detailEl.classList.remove('show');
+    if(POSTS.length === 0){ emptyEl.style.display = 'block'; }
+    else { listEl.classList.remove('hide'); }
+    history.pushState('', document.title, window.location.pathname + window.location.search);
+  }
+
+  function routeFromHash(){
+    const hash = window.location.hash.replace('#','');
+    if(hash) showPost(hash);
+    else showList();
+  }
+
+  renderList();
+  routeFromHash();
+  window.addEventListener('hashchange', routeFromHash);
+</script>
+</body>
+</html>
